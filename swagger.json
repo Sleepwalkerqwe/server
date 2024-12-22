@@ -1,0 +1,432 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ArkPz API",
+    "version": "1.0.0",
+    "description": "API для мониторинга здоровья и администрирования."
+  },
+  "paths": {
+    "/api/admin/users": {
+      "get": {
+        "summary": "Get all users",
+        "tags": ["Admin"],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/users/{id}": {
+      "delete": {
+        "summary": "Delete a user",
+        "tags": ["Admin"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "User deleted successfully" },
+          "500": { "description": "Error deleting user" }
+        }
+      }
+    },
+    "/api/admin/notifications": {
+      "get": {
+        "summary": "Get all notifications",
+        "tags": ["Admin"],
+        "responses": {
+          "200": {
+            "description": "List of notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Notification" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/notifications/{id}": {
+      "delete": {
+        "summary": "Delete a notification",
+        "tags": ["Admin"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Notification ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Notification deleted successfully" },
+          "500": { "description": "Error deleting notification" }
+        }
+      }
+    },
+    "/api/health/data": {
+      "get": {
+        "summary": "Получить данные о здоровье",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "description": "ID пользователя",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный ответ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userId": { "type": "string" },
+                    "pulse": { "type": "integer" },
+                    "activityLevel": { "type": "integer" },
+                    "stressLevel": { "type": "integer" },
+                    "sleepHours": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Добавить данные о здоровье",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": { "type": "string" },
+                  "pulse": { "type": "integer" },
+                  "activityLevel": { "type": "integer" },
+                  "stressLevel": { "type": "integer" },
+                  "sleepHours": { "type": "integer" }
+                },
+                "required": [
+                  "userId",
+                  "pulse",
+                  "activityLevel",
+                  "stressLevel",
+                  "sleepHours"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Данные успешно добавлены"
+          },
+          "400": {
+            "description": "Ошибка в данных"
+          }
+        }
+      }
+    },
+    "/api/health/reminder": {
+      "get": {
+        "summary": "Get health reminders",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "description": "ID пользователя",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of health reminders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Reminder" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health/reminder/{id}": {
+      "delete": {
+        "summary": "Delete health reminder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Reminder ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Reminder deleted successfully" },
+          "500": { "description": "Error deleting reminder" }
+        }
+      }
+    },
+    "/api/registration": {
+      "post": {
+        "summary": "Регистрация пользователя",
+        "description": "Регистрация нового пользователя с валидацией email и пароля.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email пользователя"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 32,
+                    "description": "Пароль пользователя"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Пользователь зарегистрирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Пользователь успешно зарегистрирован."
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "email": { "type": "string" },
+                        "role": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации данных",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Неверный email или пароль."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "Вход пользователя",
+        "description": "Вход в систему с использованием email и пароля.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email пользователя"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Пароль пользователя"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Пользователь вошел",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Пользователь успешно вошел."
+                    },
+                    "accessToken": {
+                      "type": "string",
+                      "example": "access-token-example"
+                    },
+                    "refreshToken": {
+                      "type": "string",
+                      "example": "refresh-token-example"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Неверный логин или пароль",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Неверный email или пароль."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "summary": "Выход пользователя",
+        "responses": {
+          "200": { "description": "Пользователь вышел" }
+        }
+      }
+    },
+    "/api/activate/{link}": {
+      "get": {
+        "summary": "Активация аккаунта",
+        "parameters": [
+          {
+            "name": "link",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Ссылка для активации"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Аккаунт активирован" },
+          "400": { "description": "Ошибка активации" }
+        }
+      }
+    },
+    "/api/refresh": {
+      "get": {
+        "summary": "Обновление токена",
+        "parameters": [
+          {
+            "name": "refreshToken",
+            "in": "body",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Email пользователя"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Токен обновлен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "refreshToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Неавторизованный доступ" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "role": { "type": "string" }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "type": { "type": "string" },
+          "message": { "type": "string" },
+          "isRead": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "dueDate": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Reminder": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "string" },
+          "message": { "type": "string" },
+          "dueDate": { "type": "string", "format": "date-time" }
+        }
+      }
+    }
+  }
+}

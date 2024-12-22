@@ -6,8 +6,14 @@ const mongoose = require("mongoose");
 const router = require("./router/index");
 const errorMiddleware = require("./middlewares/error-middleware");
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
+
 const PORT = process.env.PORT || 5000;
 const app = express();
+
+// Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(express.json());
 app.use(cookieParser());
