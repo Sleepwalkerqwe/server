@@ -1,16 +1,14 @@
 const userService = require("../service/user-service");
 const { validationResult } = require("express-validator");
 const ApiError = require("../exceptions/api-error");
-const Role = require("../models/Role");
+const tokenService = require("../service/token-service");
 
 class UserController {
   async registration(req, res, next) {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(
-          ApiError.BadRequest("Помилка при валідації", errors.array())
-        );
+        return next(ApiError.BadRequest("Помилка при валідації", errors.array()));
       }
       const { email, password, role } = req.body;
 
@@ -29,6 +27,11 @@ class UserController {
     try {
       const { email, password } = req.body;
       const userData = await userService.login(email, password);
+      res.cookie("accessToken", userData.accessToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
@@ -44,6 +47,7 @@ class UserController {
       const { refreshToken } = req.cookies;
       const token = await userService.logout(refreshToken);
       res.clearCookie("refreshToken");
+      res.clearCookie("accessToken");
       return res.json(token);
     } catch (e) {
       next(e);
@@ -78,6 +82,52 @@ class UserController {
     try {
       const users = await userService.getAllUsers();
       return res.json(users);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  //
+  //
+  //
+
+  async getMyHealthData(req, res, next) {
+    try {
+      const accessToken = req.cookies.accessToken; // Извлекаем токен из cookies
+
+      const userData = tokenService.validateAccessToken(accessToken); // Валидируем токен
+
+      const userId = userData.id;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      // Пример данных
+      const data = {
+        userId,
+        pulse: 70,
+        activityLevel: 3,
+        stressLevel: 2,
+        sleepHours: 7,
+      };
+      res.status(200).json(data);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async addMyHealthData(req, res, next) {
+    try {
+      const accessToken = req.cookies.accessToken; // Извлекаем токен из cookies
+
+      const userData = tokenService.validateAccessToken(accessToken); // Валидируем токен
+
+      const userId = userData.id;
+      const { pulse, activityLevel, stressLevel, sleepHours } = req.body;
+      if (!userId || !pulse || !activityLevel || !stressLevel || !sleepHours) {
+        return res.status(400).json({ error: "Invalid input data" });
+      }
+      // Пример обработки данных
+      res.status(201).json({ message: "Data successfully added" });
     } catch (e) {
       next(e);
     }

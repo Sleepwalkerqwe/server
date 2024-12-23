@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "ArkPz API",
+    "title": "ATARK API",
     "version": "1.0.0",
-    "description": "API для мониторинга здоровья и администрирования."
+    "description": "API lab3."
   },
   "paths": {
     "/api/admin/users": {
@@ -25,6 +25,7 @@
         }
       }
     },
+
     "/api/admin/users/{id}": {
       "delete": {
         "summary": "Delete a user",
@@ -44,6 +45,7 @@
         }
       }
     },
+
     "/api/admin/notifications": {
       "get": {
         "summary": "Get all notifications",
@@ -63,6 +65,7 @@
         }
       }
     },
+
     "/api/admin/notifications/{id}": {
       "delete": {
         "summary": "Delete a notification",
@@ -82,9 +85,11 @@
         }
       }
     },
-    "/api/health/data": {
+
+    "/api/admin/health/data": {
       "get": {
-        "summary": "Получить данные о здоровье",
+        "summary": "Get health data by user id",
+        "tags": ["Admin"],
         "parameters": [
           {
             "name": "userId",
@@ -96,7 +101,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Успешный ответ",
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
@@ -115,7 +120,8 @@
         }
       },
       "post": {
-        "summary": "Добавить данные о здоровье",
+        "summary": "Add health data by user id",
+        "tags": ["Admin"],
         "requestBody": {
           "required": true,
           "content": {
@@ -129,76 +135,111 @@
                   "stressLevel": { "type": "integer" },
                   "sleepHours": { "type": "integer" }
                 },
-                "required": [
-                  "userId",
-                  "pulse",
-                  "activityLevel",
-                  "stressLevel",
-                  "sleepHours"
-                ]
+                "required": ["userId", "pulse", "activityLevel", "stressLevel", "sleepHours"]
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Данные успешно добавлены"
+            "description": "Data added successfully"
           },
           "400": {
-            "description": "Ошибка в данных"
+            "description": "Data error"
           }
         }
       }
     },
-    "/api/health/reminder": {
+
+    "/api/admin/refresh": {
       "get": {
-        "summary": "Get health reminders",
+        "summary": "Token update",
+        "tags": ["Admin"],
+
         "parameters": [
           {
-            "name": "userId",
-            "in": "query",
+            "name": "refreshToken",
+            "in": "body",
             "required": true,
-            "description": "ID пользователя",
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "description": "User email"
           }
         ],
         "responses": {
           "200": {
-            "description": "List of health reminders",
+            "description": "Token updated",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/Reminder" }
+                  "type": "object",
+                  "properties": {
+                    "refreshToken": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized access" }
+        }
+      }
+    },
+
+    "/api/health/data": {
+      "get": {
+        "summary": "Get my health data",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pulse": { "type": "integer" },
+                    "activityLevel": { "type": "integer" },
+                    "stressLevel": { "type": "integer" },
+                    "sleepHours": { "type": "integer" }
+                  }
                 }
               }
             }
           }
         }
-      }
-    },
-    "/api/health/reminder/{id}": {
-      "delete": {
-        "summary": "Delete health reminder",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Reminder ID"
+      },
+      "post": {
+        "summary": "Add my health data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pulse": { "type": "integer" },
+                  "activityLevel": { "type": "integer" },
+                  "stressLevel": { "type": "integer" },
+                  "sleepHours": { "type": "integer" }
+                },
+                "required": ["pulse", "activityLevel", "stressLevel", "sleepHours"]
+              }
+            }
           }
-        ],
+        },
         "responses": {
-          "200": { "description": "Reminder deleted successfully" },
-          "500": { "description": "Error deleting reminder" }
+          "201": {
+            "description": "Data added successfully"
+          },
+          "400": {
+            "description": "Data error"
+          }
         }
       }
     },
+
     "/api/registration": {
       "post": {
-        "summary": "Регистрация пользователя",
-        "description": "Регистрация нового пользователя с валидацией email и пароля.",
+        "summary": "User registration",
+        "description": "Registration of a new user with email and password validation.",
         "requestBody": {
           "required": true,
           "content": {
@@ -209,13 +250,13 @@
                   "email": {
                     "type": "string",
                     "format": "email",
-                    "description": "Email пользователя"
+                    "description": "User email"
                   },
                   "password": {
                     "type": "string",
                     "minLength": 3,
                     "maxLength": 32,
-                    "description": "Пароль пользователя"
+                    "description": "User password"
                   },
                   "role": {
                     "type": "string"
@@ -270,10 +311,11 @@
         }
       }
     },
+
     "/api/login": {
       "post": {
-        "summary": "Вход пользователя",
-        "description": "Вход в систему с использованием email и пароля.",
+        "summary": "User Login",
+        "description": "Login using email and password.",
         "requestBody": {
           "required": true,
           "content": {
@@ -284,11 +326,11 @@
                   "email": {
                     "type": "string",
                     "format": "email",
-                    "description": "Email пользователя"
+                    "description": "User email"
                   },
                   "password": {
                     "type": "string",
-                    "description": "Пароль пользователя"
+                    "description": "User password"
                   }
                 },
                 "required": ["email", "password"]
@@ -298,7 +340,7 @@
         },
         "responses": {
           "200": {
-            "description": "Пользователь вошел",
+            "description": "User logged in",
             "content": {
               "application/json": {
                 "schema": {
@@ -306,7 +348,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "example": "Пользователь успешно вошел."
+                      "example": "The user has successfully logged in."
                     },
                     "accessToken": {
                       "type": "string",
@@ -340,59 +382,31 @@
         }
       }
     },
+
     "/api/logout": {
       "post": {
-        "summary": "Выход пользователя",
+        "summary": "User logout",
         "responses": {
-          "200": { "description": "Пользователь вышел" }
+          "200": { "description": "User has logged out" }
         }
       }
     },
+
     "/api/activate/{link}": {
       "get": {
-        "summary": "Активация аккаунта",
+        "summary": "Account activation",
         "parameters": [
           {
             "name": "link",
             "in": "path",
             "required": true,
             "schema": { "type": "string" },
-            "description": "Ссылка для активации"
+            "description": "Activation link"
           }
         ],
         "responses": {
-          "200": { "description": "Аккаунт активирован" },
-          "400": { "description": "Ошибка активации" }
-        }
-      }
-    },
-    "/api/refresh": {
-      "get": {
-        "summary": "Обновление токена",
-        "parameters": [
-          {
-            "name": "refreshToken",
-            "in": "body",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "Email пользователя"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Токен обновлен",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "refreshToken": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "401": { "description": "Неавторизованный доступ" }
+          "200": { "description": "Account activated" },
+          "400": { "description": "Activation error" }
         }
       }
     }

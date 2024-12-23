@@ -12,6 +12,12 @@ module.exports = class ApiError extends Error {
     return new ApiError(401, "Користувач не авторизован");
   }
 
+  static PermissionsError() {
+    return new ApiError(
+      401,
+      "Користувач має бути адміном, щоб виконувати цей запит"
+    );
+  }
   static BadRequest(message, errors = []) {
     return new ApiError(400, message, errors);
   }

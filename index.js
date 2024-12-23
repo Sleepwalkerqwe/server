@@ -14,7 +14,7 @@ const app = express();
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(cookieParser());
 

@@ -1,50 +1,29 @@
 const Router = require("express").Router;
 const adminMiddleware = require("../middlewares/admin-middleware.js");
-const User = require("../models/user-model.js");
-const Notification = require("../models/notification-model.js");
+const adminController = require("../controllers/admin-controller.js");
+
+const Admin = require("../models/user-model.js");
 
 const router = new Router();
 
 // Получение списка всех пользователей
-router.get("/users", adminMiddleware, async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch (e) {
-    res.status(500).json({ message: "Error fetching users" });
-  }
-});
+router.get("/users", adminMiddleware, adminController.getUsers);
+
+//
+router.post("/create/notification", adminController.createNotification);
 
 // Удаление пользователя
-router.delete("/users/:id", adminMiddleware, async (req, res) => {
-  try {
-    const { id } = req.params;
-    await User.findByIdAndDelete(id);
-    res.json({ message: "User deleted successfully" });
-  } catch (e) {
-    res.status(500).json({ message: "Error deleting user" });
-  }
-});
+router.delete("/users/:id", adminController.deleteUser);
 
 // Получение всех напоминаний
-router.get("/notifications", adminMiddleware, async (req, res) => {
-  try {
-    const notifications = await Notification.find();
-    res.json(notifications);
-  } catch (e) {
-    res.status(500).json({ message: "Error fetching notifications" });
-  }
-});
+router.get("/notifications", adminController.getNotification);
 
 // Удаление напоминания
-router.delete("/notifications/:id", adminMiddleware, async (req, res) => {
-  try {
-    const { id } = req.params;
-    await Notification.findByIdAndDelete(id);
-    res.json({ message: "Notification deleted successfully" });
-  } catch (e) {
-    res.status(500).json({ message: "Error deleting notification" });
-  }
-});
+router.delete("/notifications/:id", adminController.deleteNotification);
 
+router.get("/health/data", adminController.getUserHelthData);
+
+router.post("/health/data", adminController.addUserHealthData);
+
+router.get("/refresh", adminController.refresh);
 module.exports = router;
