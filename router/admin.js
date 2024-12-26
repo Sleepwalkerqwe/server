@@ -15,15 +15,24 @@ router.post("/create/notification", adminController.createNotification);
 // Удаление пользователя
 router.delete("/users/:id", adminController.deleteUser);
 
-// Получение всех напоминаний
+// Notifications
+router.post("/notification", adminController.addNotification);
+
 router.get("/notifications", adminController.getNotification);
 
-// Удаление напоминания
 router.delete("/notifications/:id", adminController.deleteNotification);
 
 router.get("/health/data", adminController.getUserHelthData);
-
 router.post("/health/data", adminController.addUserHealthData);
 
+router.get("/health/data/average-temperature", adminController.getAverageTemperature);
+router.get("/health/data/average-heart-rate", adminController.getAverageHeartRate);
+router.get("/health/data/average-steps", adminController.getAverageSteps);
+
+router.get("/health/data/average-healthData", adminController.getAverageHealthData);
+
+//
+//
 router.get("/refresh", adminController.refresh);
+
 module.exports = router;
