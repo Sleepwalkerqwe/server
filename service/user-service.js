@@ -10,9 +10,7 @@ class UserService {
   async registration(email, password, role) {
     const candidate = await UserModel.findOne({ email });
     if (candidate) {
-      throw ApiError.BadRequest(
-        `Пользователь с почтовым адресом ${email} уже существует`
-      );
+      throw ApiError.BadRequest(`User with email address ${email} already exists`);
     }
     const hashPassword = await bcrypt.hash(password, 3);
     const activationLink = uuid.v4(); // v34fa-asfasf-142saf-sa-asf
@@ -23,10 +21,7 @@ class UserService {
       activationLink,
       role,
     });
-    await mailService.sendActivationMail(
-      email,
-      `${process.env.API_URL}/api/activate/${activationLink}`
-    );
+    await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
     const userDto = new UserDto(user); // id, email, isActivated, role
     const tokens = tokenService.generateTokens({ ...userDto });
@@ -38,7 +33,7 @@ class UserService {
   async activate(activationLink) {
     const user = await UserModel.findOne({ activationLink });
     if (!user) {
-      throw ApiError.BadRequest("Неккоректная ссылка активации");
+      throw ApiError.BadRequest("Incorrect activation link");
     }
     user.isActivated = true;
     await user.save();
@@ -47,11 +42,11 @@ class UserService {
   async login(email, password) {
     const user = await UserModel.findOne({ email });
     if (!user) {
-      throw ApiError.BadRequest("Пользователь с таким email не найден");
+      throw ApiError.BadRequest("User with this email was not found");
     }
     const isPassEquals = await bcrypt.compare(password, user.password);
     if (!isPassEquals) {
-      throw ApiError.BadRequest("Неверный пароль");
+      throw ApiError.BadRequest("Invalid password");
     }
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });

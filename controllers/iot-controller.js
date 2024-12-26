@@ -5,20 +5,20 @@ exports.getMessage = async (topic, message) => {
 
     const { temperature, heartRate, steps } = messageData;
 
-    // Создаем новый объект с данными для пользователя
+    // Create a new object with data for the user
     const data = new Data({
-      userId: "67682ac15ab74a6348a0debc", // Привязываем данные к конкретному пользователю
+      userId: "67682ac15ab74a6348a0debc", // Bind the data to a specific user
       temperature,
       heartRate,
       steps,
     });
 
     try {
-      // Сохраняем данные в базу данных
+      // Save the data to the database
       await data.save();
-      console.log("Дані успішно збережені у базі даних");
+      console.log("Data was successfully saved to the database");
     } catch (err) {
-      console.error("Помилка збереження даних:", err);
+      console.error("Storing data:", err);
     }
   }
 };

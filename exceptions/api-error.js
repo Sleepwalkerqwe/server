@@ -9,15 +9,13 @@ module.exports = class ApiError extends Error {
   }
 
   static UnauthorizedError() {
-    return new ApiError(401, "Користувач не авторизован");
+    return new ApiError(401, "Koristuvach is not authorized");
   }
 
   static PermissionsError() {
-    return new ApiError(
-      401,
-      "Користувач має бути адміном, щоб виконувати цей запит"
-    );
+    return new ApiError(401, "Koristuvach may be an admin, so you can sign off on this");
   }
+
   static BadRequest(message, errors = []) {
     return new ApiError(400, message, errors);
   }

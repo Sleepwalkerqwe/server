@@ -3,13 +3,13 @@ const tokenService = require("../service/token-service");
 
 module.exports = function (req, res, next) {
   try {
-    const accessToken = req.cookies.accessToken; // Извлекаем токен из cookies
+    const accessToken = req.cookies.accessToken; // Retrieving the token from cookies
     if (!accessToken) {
       console.log(1);
       return next(ApiError.UnauthorizedError());
     }
 
-    const userData = tokenService.validateAccessToken(accessToken); // Валидируем токен
+    const userData = tokenService.validateAccessToken(accessToken); // Validate the token
 
     if (!userData) {
       console.log(accessToken.split(" ")[1]);

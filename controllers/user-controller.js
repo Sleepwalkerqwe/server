@@ -8,7 +8,7 @@ class UserController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(ApiError.BadRequest("Помилка при валідації", errors.array()));
+        return next(ApiError.BadRequest("Validation error", errors.array()));
       }
       const { email, password, role } = req.body;
 
@@ -87,16 +87,11 @@ class UserController {
     }
   }
 
-  //
-  //
-  //
-
   async getMyHealthData(req, res, next) {
     try {
-      const accessToken = req.cookies.accessToken; // Извлекаем токен из cookies
+      const accessToken = req.cookies.accessToken; // Retrieving the token from cookies
 
-      const userData = tokenService.validateAccessToken(accessToken); // Валидируем токен
-
+      const userData = tokenService.validateAccessToken(accessToken); // Validate the token
       const userId = userData.id;
       if (!userId) {
         return res.status(400).json({ error: "userId is required" });
@@ -117,16 +112,14 @@ class UserController {
 
   async addMyHealthData(req, res, next) {
     try {
-      const accessToken = req.cookies.accessToken; // Извлекаем токен из cookies
-
-      const userData = tokenService.validateAccessToken(accessToken); // Валидируем токен
-
+      const accessToken = req.cookies.accessToken; // Retrieving the token from cookies
+      const userData = tokenService.validateAccessToken(accessToken); // Validate the token
       const userId = userData.id;
       const { pulse, activityLevel, stressLevel, sleepHours } = req.body;
       if (!userId || !pulse || !activityLevel || !stressLevel || !sleepHours) {
         return res.status(400).json({ error: "Invalid input data" });
       }
-      // Пример обработки данных
+      // Example of data processing
       res.status(201).json({ message: "Data successfully added" });
     } catch (e) {
       next(e);

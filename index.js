@@ -10,13 +10,12 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
 const PORT = process.env.PORT || 5000;
-const MQTT_BROKER = "mqtt://broker.hivemq.com"; // Укажите адрес брокера
-const MQTT_TOPIC = "iot/data"; // Топик для подписки (должен совпадать с топиком на вашем устройстве)
-const Data = require("./models/Data"); // Подключаем модель данных
+const MQTT_BROKER = "mqtt://broker.hivemq.com"; // Broker's address
+const MQTT_TOPIC = "iot/data"; // Topic for prepayment
 
 const app = express();
 
-// MongoDB модель для хранения данных
+// MongoDB model for storing data
 const SensorData = mongoose.model(
   "SensorData",
   new mongoose.Schema({
@@ -47,7 +46,7 @@ app.get("/", (req, res) => {
 app.use("/api", router);
 app.use(errorMiddleware);
 
-// Подключение к MQTT-брокеру
+// Connect to an MQTT broker
 const mqttClient = mqtt.connect(MQTT_BROKER);
 mqttClient.on("connect", () => {
   console.log("MQTT connected");

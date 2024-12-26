@@ -23,7 +23,6 @@ router.get("/", (req, res) => {
 });
 
 router.get("/data", async (req, res) => {
-  console.log("ACHTUNG");
   res.send("Hello world");
 });
 
@@ -36,12 +35,11 @@ router.post("/data", async (req, res) => {
       heartRate,
       timestamp: new Date(),
     });
-    console.log("ACHTUNG");
 
     await data.save();
-    res.status(201).send("Данные успешно сохранены");
+    res.status(201).send("Data saved successfully");
   } catch (err) {
-    res.status(500).send("Ошибка сервера: " + err.message);
+    res.status(500).send("Server error: " + err.message);
   }
 });
 module.exports = router;

@@ -267,6 +267,7 @@
         }
       }
     },
+
     "/api/admin/health/data/average-temperature": {
       "get": {
         "summary": "Get average temperature by user ID",
@@ -323,6 +324,7 @@
         }
       }
     },
+
     "/api/admin/health/data/average-heart-rate": {
       "get": {
         "summary": "Get average heart rate by user ID",
@@ -380,6 +382,7 @@
         }
       }
     },
+
     "/api/admin/health/data/average-steps": {
       "get": {
         "summary": "Get average steps by user ID",
